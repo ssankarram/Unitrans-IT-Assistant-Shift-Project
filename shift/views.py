@@ -5,11 +5,12 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from django.views.generic import View
 from .shift import Shift
-from .forms import UserForm
+from .shift_group import ShiftGroup
+#from .forms import UserForm
 
 def index2(request):
 	all_shifts = Shift.objects.all() #database call
-	template = loader.get_template('shift/index2.html')
+	template = loader.get_template('index2.html')
 	html = ''
 	for shift in all_shifts:
 		url = '/shift/groups' + '/'
@@ -18,11 +19,33 @@ def index2(request):
 
 def index(request):
 	all_shifts = Shift.objects.all() #database call
-	template = loader.get_template('shift/index.html')
+	template = loader.get_template('index.html')
 	html = ''
+	i = 1
+	html += '<h1> Shifts </h1>'
 	for shift in all_shifts:
 		url = '/shift/' + str(shift.id) + '/'
-		html += '<a href="' + url + '">' + "Shift #" +str(shift.id) + '</a><br>'
+		html += '<a href="' + url + '">' + "Shift #" +str(i) + '</a><br>'
+		i = i + 1
+	#for shift in 
+	html += '<br></br>'
+	urlgroup = ''
+	i = 0
+	html += '<h1> Grouped Shifts -- Day </h1>'
+	for group_shift in ShiftGroup.objects.all():
+		urlgroup = '/shift/' + str(group_shift.id) + '/group/'
+		if i == 0:
+			html+= "<h2> Monday </h2>"
+		if i == 1:
+			html+= "<h2> Tuesday </h2>"
+		if i == 2:
+			html+= "<h2> Wednesday </h2>"
+		if i == 3:
+			html+= "<h2> Thursday </h2>"
+		if i == 4:
+			html+= "<h2> Friday </h2>"
+		html += '<a href="' + urlgroup + '">' + "Grouped Shift #" +str(i) + '</a><br>'
+		i = i + 1
 	return HttpResponse(html)
 
 def detail(request, shift_id):
@@ -32,29 +55,32 @@ def detail(request, shift_id):
 	html += "<h2> Start Time: " + str(shiftobj.start_datetime) + "</h2>"
 	html += "<h2> End Time: " + str(shiftobj.end_datetime) + "</h2>"
 	html += "<h2> Runs for Shift# " + str(shift_id) + "</h2>"
-	#html += str(shiftobj.Runs)
+	i = 0
+	#html += "Sign Up For Runs"
+	for run in shiftobj.runs_related.all():
+		html += '<a>' + "Run #" + str(run.id) +" Start Time" + ": " + str(run.start_datetime) + '</a>'
+		html += "<br>"
+		html += '<a>' + "Run #" + str(i) +" End Time" + ": " + str(run.end_datetime) + '</a>'
+		html += "<br>"
+		html += '<button type="button">Sign up for Run</button>'
+		html += "<br>"
+		html += "<br>"
+		i = i + 1
 	return HttpResponse(html)
 
-
-class UserFormView(View):
-	form_class = UserForm
-	tempalte_name = 'shift/registration_form.html'
-	def get(self, request):
-		form = self.form_class(None)
-		return render(request, self.template_name, {'form': form})
-
-	def post(self, request):
-		form = self.form_class(request.POST)
-		if form.is_valid():
-			user = form.save(commit=False)
-			username = form.cleaned_data['username']
-			password = form.cleaned_data['password']
-			user.set_password(password)
-			user.save()
-
-			user = authenticate(username=username, password=password)
-
-			if user is not None:
-				if user.is_active:
-					login(request, user)
-					return redirect('shift:index')
+def detail2(request, group_shift_id):
+	shiftgroupobj = ShiftGroup.objects.get(id = group_shift_id);
+	html = ''
+	i = 0
+	for shift in shiftgroupobj.shifts_related.all():
+		html += '<h2>' + "Shift# " + str(i) + ": " + str(shift.start_datetime) + '</h2>'
+		for run in shift.runs_related.all():
+			html += '<a>' + "Run #" + str(i) +" Start Time" + ": " + str(run.start_datetime) + '</a>'
+			html += "<br>"
+			html += '<a>' + "Run #" + str(i) +" End Time" + ": " + str(run.end_datetime) + '</a>'
+			html += "<br>"
+			html += '<button type="button">Sign up for Run</button>'
+			html += "<br>"
+			html += "<br>"
+		i = i + 1
+	return HttpResponse(html)

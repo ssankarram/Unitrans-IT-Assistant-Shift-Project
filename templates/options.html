@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block head_title %}{{ title }} | {{ block.super}}{% endblock head_title %}
+
+{% block content %}
+<div class='row'>
+<div class='col-sm-6 col-sm-offset-3'>
+<!-- create shift -->
+<h1>Create Shift</h1>
+<form method='POST' action='' enctype='multipart/form-data'>{% csrf_token %}
+{{create_form}}
+<input type='submit' class='btn btn-default' value='Create Shift'/>
+
+<br></br>
+<!-- edit shift -->
+<h1> Delete Shift </h1>
+  Which shift would you like to delete? (shift id) <br>
+  {% csrf_token %}
+{{delete_form}}
+ <input type="submit" class='btn btn-default' value="Delete Shift">
+
+</div>
+</div>
+{% endblock %}
