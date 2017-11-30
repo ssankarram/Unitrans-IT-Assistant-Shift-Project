@@ -52,6 +52,18 @@ class UserRegisterForm(forms.ModelForm):
 		#	raise forms.ValidationError("Emails must match.")
 		return email
 
+class signUpForRun(forms.Form):
+	password = forms.CharField(widget = forms.TextInput())
+
+class AdminCreateRun(forms.Form):
+	#user_id = forms.IntegerField(required = False,widget=forms.TextInput())
+	start_datetime = forms.CharField(required = False,widget=forms.TextInput())
+	end_datetime = forms.CharField(required = False,widget=forms.TextInput())
+
+class AdminDeleteRun(forms.Form):
+	start_datetime1 = forms.CharField(required = False,widget=forms.TextInput())
+	end_datetime1 = forms.CharField(required = False,widget=forms.TextInput())
+
 class AdminDeleteShiftForm(forms.Form):
 	delete_id = forms.CharField(required = False,widget=forms.TextInput())
 

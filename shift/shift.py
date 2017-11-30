@@ -9,6 +9,26 @@ from shift.shift_group import ShiftGroup
 
 class ShiftManager(models.Manager):
 
+    def updateRuns(self, run_times_list_updated2):
+        for shift in Shift.objects.all():
+            temp=[]
+            shift.runs_related.set(temp)
+            actualRuns=[]
+            for run in run_times_list_updated2:
+                if ((run.start_datetime.date() == shift.start_datetime.date()) and (run.start_datetime.time().hour >= shift.start_datetime.hour and run.end_datetime.time().hour <=  shift.end_datetime.hour)):
+                    actualRuns.append(run)
+            shift.runs_related.set(actualRuns)
+
+    def updateShifts(self, run_times_list_updated):
+        for shift in Shift.objects.all():
+            temp=[]
+            shift.runs_related.set(temp)
+            actualRuns=[]
+            for run in run_times_list_updated:
+                if ((run.start_datetime.date() == shift.start_datetime.date()) and (run.start_datetime.time().hour >= shift.start_datetime.hour and run.end_datetime.time().hour <=  shift.end_datetime.hour)):
+                    actualRuns.append(run)
+            shift.runs_related.set(actualRuns)
+
     def create_shift(self, start_datetime, end_datetime, run_times_list):
         shift1 = Shift(start_datetime = start_datetime, end_datetime = end_datetime)
         shift1.save()

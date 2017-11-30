@@ -1,6 +1,7 @@
 from django.conf.urls import url
 from django.contrib.auth.views import login
 from . import views 
+from .views import send_command
 from accounts.views import (login_view, logout_view, register_view, options_view)
 
 urlpatterns = [
@@ -14,6 +15,7 @@ urlpatterns = [
 
 	#/shift/
 	url(r'^(?P<shift_id>[0-9]+)/$', views.detail, name="detail"),
+	url(r'^send_command/(?P<run_id>[0-9]+)', views.send_command, name='send_command'),
 	url(r'^(?P<group_shift_id>[0-9]+)/group/$', views.detail2, name="detail2"),
 	url(r'^login/', login_view, name='login'),
 	url(r'^logout/', logout_view, name='logout'),

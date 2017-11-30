@@ -1,5 +1,6 @@
 from django.shortcuts import render, HttpResponseRedirect
 from .forms import UserLoginForm, UserRegisterForm
+from django import forms
 from shift.shift import Shift, ShiftManager
 from shift.shift_group import ShiftGroup, ShiftGroupManager
 from django.http import Http404
@@ -17,7 +18,7 @@ from django.contrib.auth import (
 
 	)
 
-from .forms import UserLoginForm, AdminCreateShiftForm, AdminDeleteShiftForm
+from .forms import UserLoginForm, AdminCreateShiftForm, AdminDeleteShiftForm, AdminCreateRun, AdminDeleteRun
 
 def login_view(request):
 	title="Login"
@@ -61,10 +62,15 @@ def options_view(request):
 	title = "Options"
 	form = AdminCreateShiftForm(request.POST or None)
 	form_delete = AdminDeleteShiftForm(request.POST or None)
+	form_createrun = AdminCreateRun(request.POST or None)
+	form_deleterun = AdminDeleteRun(request.POST or None)
 
 	context = {}
 	context['create_form'] = form
 	context['delete_form'] = form_delete
+	context['create_run_form'] = form_createrun
+	context['delete_run_form'] = form_deleterun
+
 	if form.is_valid():
 		startYear=form.cleaned_data.get("start_year")
 		startMonth=form.cleaned_data.get("start_month")
@@ -95,6 +101,36 @@ def options_view(request):
 			print("Successfully deleted shift")
 			render(request, "index.html")
 
+	if form_createrun.is_valid():
+		start_datetime=form_createrun.cleaned_data.get("start_datetime")
+		end_datetime=form_createrun.cleaned_data.get("end_datetime")
+
+		bool_ = 0
+		for run in Run.objects.all():
+			x = str((run.start_datetime))
+			y = str((run.end_datetime))
+			if (start_datetime == x[:-9] and end_datetime == y[:-9]):
+				bool_ = 1
+				raise forms.ValidationError("Error: Attempt to make a Run duplicate.")
+
+		if (bool_ == 0 and start_datetime):
+			Run.objects.create_run(start_datetime=start_datetime, end_datetime=end_datetime)
+			Shift.objects.updateShifts(Run.objects.all())
+			print("rendering..")
+			render(request, "index.html")
+
+	if form_deleterun.is_valid():
+		start_datetime1 = form_deleterun.cleaned_data.get("start_datetime1")
+		end_datetime1 = form_deleterun.cleaned_data.get("end_datetime1")
+		if (start_datetime1):
+			for r in Run.objects.all():
+				x = str(start_datetime1)
+				y = str(end_datetime1)
+				print(x + " " + start_datetime1)
+				print(y + " " + end_datetime1)
+				if (x == start_datetime1 and y == end_datetime1):
+					print("deleting object")
+					r.delete()
 	else:
 		print("boo nothing")
 	return render(request, "options.html", context)
