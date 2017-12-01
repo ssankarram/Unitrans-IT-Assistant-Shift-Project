@@ -13,7 +13,9 @@ urlpatterns = [
 	#/register
 	#url(r'^register/$', views.UserFormView.as_view(), name='register'), #default home page, go to views and look for function called index
 
-	#/shift/
+	#/shift/,...
+	url(r'^shift/', views.index3, name='index3'),
+	url(r'^groups/', views.index4, name='index3'),
 	url(r'^(?P<shift_id>[0-9]+)/$', views.detail, name="detail"),
 	url(r'^send_command/(?P<run_id>[0-9]+)', views.send_command, name='send_command'),
 	url(r'^(?P<group_shift_id>[0-9]+)/group/$', views.detail2, name="detail2"),

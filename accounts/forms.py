@@ -53,7 +53,7 @@ class UserRegisterForm(forms.ModelForm):
 		return email
 
 class signUpForRun(forms.Form):
-	password = forms.CharField(widget = forms.TextInput())
+	password = forms.CharField(widget = forms.PasswordInput())
 
 class AdminCreateRun(forms.Form):
 	#user_id = forms.IntegerField(required = False,widget=forms.TextInput())
