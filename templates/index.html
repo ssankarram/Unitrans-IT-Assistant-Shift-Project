@@ -1,7 +1,132 @@
+<style>
+		body {margin:0}
+		
+		/* Style the tab */
+div.tab {
+    float: left;
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;
+    width: 10%;
+    height: 100%;
+}
+
+/* Style the buttons inside the tab */
+div.tab button {
+    display: block;
+    background-color: inherit;
+    color: black;
+    padding: 22px 16px;
+    width: 100%;
+    border: none;
+    outline: none;
+    text-align: left;
+    cursor: pointer;
+    transition: 0.3s;
+    font-size: 17px;
+}
+
+/* Change background color of buttons on hover */
+div.tab button:hover {
+    background-color: #ddd;
+}
+
+/* Create an active/current "tab button" class */
+div.tab button.active {
+    background-color: #ccc;
+}
+
+/* Style the tab content */
+.tabcontent {
+    float: left;
+    padding: 0px 12px;
+    border: 1px solid #ccc;
+    width: 70%;
+    border-left: none;
+    height: 300px;
+}
+
+		.topnav {
+			overflow: hidden;
+			background-color: #333;
+		  }
+		  
+		  .topnav a {
+			float: right;
+			color: #f2f2f2;
+			text-align: center;
+			padding: 14px 16px;
+			text-decoration: none;
+			font-size: 17px;
+		  }
+		  
+		  .topnav a:hover {
+			background-color: #ddd;
+			color: black;
+		  }
+		  
+		  .topnav a.active {
+			background-color: #4CAF50;
+			color: white;
+		  }
+		  z {
+			padding: 14px 16px;
+			float: left;
+			  color: white;
+		  }
+		  
+		  .viewshifts {
+			text-align: center;
+		  }
+
+		  .viewbutton {
+			color: #f2f2f2;
+			text-align: center;
+			padding: 14px 16px;
+			text-decoration: none;
+			font-size: 20px;
+		  }
+</style>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<div class="topnav">
+		<a href='/shift/logout/'>Logout</a>
+		<a class="active" href="/shift/">Home</a>		
+		<z>Hello, {{request.user.username}}!</z>
+</div>
+
+<div class="tab">
+		<div class = "viewbutton">
+			<a href="/shift/shift/"> Shifts </a><br>
+		</div>
+		
+		<div class = "viewbutton">
+			<a href="/shift/groups/"> Grouped Shifts </a><br>				
+		</div>
+
+		{% if request.user.username == 'admin' %}
+		<div class = "viewbutton">
+			<a href="/shift/options/"> Options </a><br>
+		</div>
+		{% endif %}
+		
+	  </div>
+
 <ul>
-	{% for shift in all_shifts%}
-	<li><a hfref="shift/{{shift.id}}"></a></li>
-	{% endfor %}
-	{% for run in all_runs%}
-	{% endfor %}
+	<center><img src='https://pbs.twimg.com/profile_images/531940230744399872/M-UsKAsW.jpeg' style='width:200px;height:200px;' alt='W3Schools.com'><br>
+	{%if request.user.username != 'admin' %}
+		<h2>{{ request.user.username }}, you are currently registered for the following runs:</h2>
+			{% for run in user_runs%}
+				<p>{{run.start_datetime}} to {{ run.end_datetime }} </p>
+			{% endfor %}
+	{% endif %}
+	<!--
+	<div class="viewshifts">
+		<a href="/shift/shift"> View All Shifts </a><br>
+	</div>
+
+	<div class="viewshifts">
+			<a href="/shift/groups"> View All Grouped Shifts </a><br>
+	</div>
+	-->
 </ul>

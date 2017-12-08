@@ -32,8 +32,8 @@ def login_view(request):
 		print(request.user.is_authenticated())
 		#redirect
 		if username == "admin":
-			return HttpResponseRedirect('/shift/options/')
-		return HttpResponseRedirect('/shift/')
+			return HttpResponseRedirect('/shift/home/')
+		return HttpResponseRedirect('/shift/home/')
 	return render(request, "form.html", {"form": form, "title": title})
 
 def register_view(request):
@@ -54,7 +54,8 @@ def register_view(request):
 
 def logout_view(request):
 	logout(request)
-	return render(request, "form.html", {})
+	render(request, "form.html", {"username": request.user.username})
+	return HttpResponseRedirect('/shift/login/')
 
 def options_view(request):
 	if request.user.username != "admin":

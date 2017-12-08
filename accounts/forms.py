@@ -52,6 +52,10 @@ class UserRegisterForm(forms.ModelForm):
 		#	raise forms.ValidationError("Emails must match.")
 		return email
 
+class editrunform(forms.Form):
+	start_datetime = forms.CharField(required = False, widget = forms.TextInput())
+	end_datetime = forms.CharField(required = False, widget = forms.TextInput())
+
 class signUpForRun(forms.Form):
 	password = forms.CharField(widget = forms.PasswordInput())
 

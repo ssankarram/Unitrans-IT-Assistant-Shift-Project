@@ -1,5 +1,3 @@
-
-
 <style>
 		body {margin:0}
 		
@@ -87,23 +85,19 @@ div.tab button.active {
 			text-decoration: none;
 			font-size: 20px;
 		  }
+          .shifts{
+              text-align: center;
+          }
 
-		  p{
-			  text-align: center;
-			  font-size: 30px;
-		  }
-		  .runs {
-			  text-align: center;
-		  }
-      h1 {
-        text-align: center;
-      }
+          f {
+              text-align: center;
+          }
 </style>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
 <div class="topnav">
-		<a href="/shift/logout/">Logout</a>
+        <a href="/shift/logout/">Logout</a>
 		<a class="active" href="/shift/">Home</a>		
 		<z>Hello, {{request.user.username}}!</z>
 </div>
@@ -125,34 +119,11 @@ div.tab button.active {
 		
 	  </div>
 
-<div class='row'>
-    <div class='col-sm-6 col-sm-offset-3'>
-    <!-- create shift -->
-    <h1>Create Shift</h1>
-    <form method='POST' action='' enctype='multipart/form-data'>{% csrf_token %}
-    {{create_form}}
-    <input type='submit' class='btn btn-default' value='Create Shift'/>
-    
-    <br></br>
-    <!-- edit shift -->
-    <center>
-    <h1> Delete Shift </h1>
-      Which shift would you like to delete? (shift id) <br>
-      {% csrf_token %}
-    {{delete_form}}
-      <input type="submit" class='btn btn-default' value="Delete Shift">
-    
-      <h1> Create Run </h1>
-      <br>
-      {% csrf_token %}
-    {{create_run_form}}
-      <input type="submit" class='btn btn-default' value="Create Run">
-    
-      <h1> Delete Run </h1>
-      <br>
-      {% csrf_token %}
-    {{delete_run_form}}
-      <input type="submit" class='btn btn-default' value="Delete Run">
-    </center>
-    </div>
-    </div>
+      <h2> <center>Shifts </center></h2>
+<ul>
+    <div class="shifts">
+        {% for shift in all_shifts%}
+            <a href = "/shift/{{shift.id}}/"> {{shift.start_datetime}}</a><br>
+        {% endfor %}
+    </div>        
+</ul>

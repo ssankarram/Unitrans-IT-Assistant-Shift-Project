@@ -7,7 +7,9 @@ from django.contrib.auth import authenticate, login
 from django.views.generic import View
 from .shift import Shift
 from .run import Run
-from accounts.forms import UserLoginForm, AdminCreateShiftForm, AdminDeleteShiftForm, AdminCreateRun, signUpForRun
+from django import template
+register = template.Library()
+from accounts.forms import UserLoginForm, AdminCreateShiftForm, AdminDeleteShiftForm, AdminCreateRun, signUpForRun, editrunform
 from .shift_group import ShiftGroup
 from django.contrib.auth import (
 	authenticate,
@@ -17,8 +19,6 @@ from django.contrib.auth import (
 
 	)
 User = get_user_model()
-
-#from .forms import UserForm
 
 def index2(request):
 	all_shifts = Shift.objects.all() #database call
@@ -31,30 +31,15 @@ def index2(request):
 
 def index4(request):
 	i = 0
-	template = loader.get_template('index.html')
-	html = ""
-	html += '<font size="5">'
-	html += '<h1> <center>Shifts by Day </h1>'
-	for group_shift in ShiftGroup.objects.all():
-		urlgroup = '/shift/' + str(group_shift.id) + '/group/'
-		html += '<font size="4">'
-		if i == 0:
-			html+= "<h2><center> Mondays: "
-		if i == 1:
-			html+= "<h2><center> Tuesdays: "
-		if i == 2:
-			html+= "<h2><center> Wednesdays: "
-		if i == 3:
-			html+= "<h2><center> Thursdays: "
-		if i == 4:
-			html+= "<h2><center> Fridays: "
-		html += '</h2><center><a href="' + urlgroup + '">' + "View Shifts" + '</a><br>'
-		i = i + 1
-	return HttpResponse(html)
-
+	#template = loader.get_template('index.html')
+	all_groups = ShiftGroup.objects.all()
+	return render(request, 'groups.html', {'all_groups': all_groups})
+	
 def index3(request):
 	#i = 1
-	template = loader.get_template('index.html')
+	all_shifts = Shift.objects.all()
+	return render(request, 'shifts.html', {'all_shifts': all_shifts})
+	'''template = loader.get_template('index.html')
 	html = ""
 	html += '<font size="5"><h1><center> Shifts </h1>'
 	for shift in Shift.objects.all():
@@ -78,26 +63,20 @@ def index3(request):
 		if shift.start_datetime.date().weekday() == 4:
 			html += '<center><font size="4"><a href="' + url + '">' + "Friday:" + '</a>'
 			html += '<a> ' + str(shift.start_datetime.time().hour) + " - " + str(shift.end_datetime.time().hour) + " PM" + '</a><br>'
-	return HttpResponse(html)
+	return HttpResponse(html)'''
 
 
 def index(request):
-	all_shifts = Shift.objects.all() #database call
+	#all_shifts = Shift.objects.all() #database call
 	all_runs = Run.objects.all() #database call
-	template = loader.get_template('index.html')
-	html = '<h2><font size="8"><center>Welcome ' + str(request.user.username) + "!</h2>"
-	html += "<center><img src='https://farm8.static.flickr.com/7352/12006048986_b8881cefa6_b.jpg' style='width:1350px;height:400px;' alt='W3Schools.com'><br>"
-	html += "<font size='5'><center>View shifts and sign up for available runs using UNI.<br><br>"
-
-	url_ = ''
-	i = 0
-	url_ = '/shift/shift'
-	html += '</h2><a href="' + url_ + '">' + "View All Shifts" + '</a><br>'
-	url_ = '/shift/groups'
-	html += '</h2><a href="' + url_ + '">' + "View All Grouped Shifts" + '</a><br>'
-	i = i + 1
-	return HttpResponse(html)
-
+	user_runs = []
+	if request.user.username != 'admin':
+		for run in Run.objects.all():
+			if run.user_id == int(request.user.username):
+				user_runs.append(run)
+		return render(request, 'index.html', {"user_runs": user_runs})
+	return render(request, 'index.html')
+	
 def send_command(request, run_id):
 	template = loader.get_template('send_command.html')
 	context = {}
@@ -115,16 +94,72 @@ def send_command(request, run_id):
 			print("valid password")
 			print(run_id)
 			r = Run.objects.get(id=run_id)
-			r.user_id = int(request.user.username)
+			r.user_id = request.user.username
 			r.save()
 			print(r.user_id)
 			print("rendering..")
-			render(request, "index.html")
-	return render(request, "send_command.html", context)
+			render(request, "details.html")
+	render(request, "send_command.html", context)
+	all_runs = Run.objects.all() #database call
+	user_runs = []
+	for run in Run.objects.all():
+		if run.user_id == int(request.user.username):
+			user_runs.append(run)
+	print(user_runs)
+	return render(request, 'index.html', {"user_runs": user_runs})
+
+def unassign(request, run_id):
+	print("clicked on unassign")
+	r = Run.objects.get(id=run_id)
+	r.user_id = 0
+	r.save()
+	all_runs = Run.objects.all() #database call
+	user_runs = []
+	for run in Run.objects.all():
+		if run.user_id == int(request.user.username) and run.user_id != 0:
+			print(run.user_id)
+			user_runs.append(run)
+	print(user_runs)
+	render(request, 'index.html', {"user_runs": user_runs})
+	return HttpResponseRedirect("/shift/")
+
+def editrun(request, run_id, shift_id):
+	context = {}
+	form = editrunform(request.POST or None)
+	context['form'] = form
+	print("in edit run")
+	if form.is_valid():
+		print("form is valid")
+		start_datetime=form.cleaned_data.get("start_datetime")
+		end_datetime=form.cleaned_data.get("end_datetime")
+		if (start_datetime):
+			r = Run.objects.get(id = run_id)
+			r.start_datetime = start_datetime
+			r.end_datetime = end_datetime
+			r.save()
+	render(request, "details.html", {"shiftobj": Shift.objects.get(id=shift_id)})
+	return render(request, "editrun.html", context)
+	return HttpResponseRedirect("/shift/" + shift_id + "/")
+
+def deleterun(request, run_id, shift_id):
+	print(Run.objects.count())
+	r = Run.objects.get(id=run_id)
+	r.delete()
+	print(Run.objects.count())
+	render(request, "details.html", {"shiftobj": Shift.objects.get(id=shift_id)})
+	return HttpResponseRedirect("/shift/" + shift_id + "/")
 
 def detail(request, shift_id):
-	template = loader.get_template('details.html')
-	shiftobj = Shift.objects.get(id = shift_id);
+	print("in details")
+	shiftobj = Shift.objects.get(id = shift_id)
+	username = ''
+	if request.user.username != 'admin':
+		user_name = int(request.user.username)
+		print(user_name)
+		return render(request, "details.html", {"shiftobj": shiftobj, "user_name": user_name})
+	admin = "admin"
+	return render(request, "details.html", {"shiftobj": shiftobj, "user_name": admin})
+
 	html = '<center>'
 	html += "<h2><font size='6'>" + "Details for Shift # " + str(shift_id) + "</h2>"
 	html += "<h2><font size='4'> Start Time: " + str(shiftobj.start_datetime) + "</h2>"

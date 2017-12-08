@@ -5,7 +5,8 @@
 {% block content %}
 <div class='row'>
 <div class='col-sm-6 col-sm-offset-3'>
-<h1>{{ title }}</h1>
+<center><h1>{{ title }}</h1></center>
+<center><img src='https://pbs.twimg.com/profile_images/531940230744399872/M-UsKAsW.jpeg' style='width:200px;height:200px;' alt='W3Schools.com'><br>
 <form method='POST' action='' enctype='multipart/form-data'>{% csrf_token %}
 {{form}}
 <input type='submit' class='btn btn-default' value='{{ title }}'/>
