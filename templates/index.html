@@ -113,8 +113,8 @@ div.tab button.active {
 	  </div>
 
 <ul>
-	<center><img src='https://pbs.twimg.com/profile_images/531940230744399872/M-UsKAsW.jpeg' style='width:200px;height:200px;' alt='W3Schools.com'><br>
-	{%if request.user.username != 'admin' %}
+		<center><img src='https://pbs.twimg.com/profile_images/531940230744399872/M-UsKAsW.jpeg' style='width:300px;height:300px;' alt='W3Schools.com'><br>
+			{%if request.user.username != 'admin' %}
 		<h2>{{ request.user.username }}, you are currently registered for the following runs:</h2>
 			{% for run in user_runs%}
 				<p>{{run.start_datetime}} to {{ run.end_datetime }} </p>

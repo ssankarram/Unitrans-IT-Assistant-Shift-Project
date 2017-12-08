@@ -135,7 +135,7 @@ div.tab button.active {
 			{%endif%}	
 			<a>User on run: {{run.user_id}} </a>		
 		{% else %}
-			<a href='/shift/send_command/{{run.id}}/'>Sign up for Run</a>
+			<a href='/shift/send_command/{{run.id}}/{{shiftobj.id}}/'>Sign up for Run</a>
 		{% endif %}		
 		<br><br>
 	</div>

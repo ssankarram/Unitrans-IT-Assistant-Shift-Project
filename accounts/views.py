@@ -35,6 +35,7 @@ def login_view(request):
 			return HttpResponseRedirect('/shift/home/')
 		return HttpResponseRedirect('/shift/home/')
 	return render(request, "form.html", {"form": form, "title": title})
+	
 
 def register_view(request):
 	title = "Register"
@@ -89,7 +90,7 @@ def options_view(request):
 			cr_date2= datetime(int(endYear), int(endMonth), int(endDay), int(endTime))
 			Shift.objects.create_shift(start_datetime=cr_date, end_datetime=cr_date2, run_times_list=Run.objects.all())
 			render(request, "index.html")
-
+			return HttpResponseRedirect("/shift/shift/")
 		print("successfully made shift")
 	else:
 		print("boo")
@@ -101,6 +102,7 @@ def options_view(request):
 			Shift.objects.get(id=int(id_)).delete()
 			print("Successfully deleted shift")
 			render(request, "index.html")
+			return HttpResponseRedirect("/shift/shift/")
 
 	if form_createrun.is_valid():
 		start_datetime=form_createrun.cleaned_data.get("start_datetime")
@@ -119,6 +121,7 @@ def options_view(request):
 			Shift.objects.updateShifts(Run.objects.all())
 			print("rendering..")
 			render(request, "index.html")
+			return HttpResponseRedirect("/shift/shift/")
 
 	if form_deleterun.is_valid():
 		start_datetime1 = form_deleterun.cleaned_data.get("start_datetime1")
@@ -132,6 +135,8 @@ def options_view(request):
 				if (x == start_datetime1 and y == end_datetime1):
 					print("deleting object")
 					r.delete()
+					render(request, "index.html")
+					return HttpResponseRedirect("/shift/shift/")
 	else:
 		print("boo nothing")
 	return render(request, "options.html", context)
